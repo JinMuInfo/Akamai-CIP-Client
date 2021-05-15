@@ -1,0 +1,35 @@
+#!/bin/zsh
+
+# 定义cip服务器信息
+es_server="https://cip.jinmu.info"
+
+# 判断第一个参数是否为 "-f" 
+if [ "${1}" = "-f" ]; then
+    # 如果是, 则第二个参数为传入的文件列表, 第三个参数为输出的cip信息文件
+    local filename_int="${2}"
+    local filename_out="${3}"
+
+    # 检查文件是否存在
+    while [ -e "${filename_out}" ]; do
+        # 如果文件存在, 则显示文件已存在提示
+        echo "${filename_out}文件已存在, 请重新输入文件名: "
+        read filename_out
+    done
+
+    # 输出文件提示信息
+    echo "结果输出至: ${filename_out}"
+
+    # 遍历文件内容
+    while read ip_tmp; do
+        # 通过curl发起请求查询cip信息, 并输出到结果文件中
+        echo ${ip_tmp}
+        result=$(curl -s "${es_server}/es?ip=${ip_tmp}")
+        echo ${result} >>${filename_out}
+    done <${filename_int}
+else
+    # 若第一个参数不为 "-f", 则认为该参数为ip
+    local ip_tmp=${1}
+    # 通过curl发起请求查询cip信息, 并输出到控制台
+    result=$(curl -s "${es_server}/es?ip=${ip_tmp}")
+    echo ${result}
+fi
