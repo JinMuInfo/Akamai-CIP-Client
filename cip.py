@@ -8,16 +8,22 @@ cip(Check IP) 的 Python3 版本
 
 
 import argparse
+import json
 import re
 import sys
 import os
-import urllib.request
 
 import dns.resolver
 import requests
 
-# lip版本
-__version__ = "0.0.9"
+# cip 版本信息
+cip_info_version = {
+    "version": "0.0.9",
+    "timestamp": "2021-05-16 22:48:13",
+    "author_name": "aojie654",
+    "author_mail": "shengjie.ao@jinmuinfo.com"
+}
+__version__ = cip_info_version["version"]
 
 # 定义cip服务器信息, DNS
 server_cip = "cip.jinmu.info"
@@ -213,7 +219,9 @@ def get_version():
     获取当前版本
     """
 
-    return __version__
+    result_version = json.dumps(cip_info_version, indent=4, ensure_ascii=False)
+
+    return result_version
 
 
 def check_update():
@@ -225,36 +233,38 @@ def check_update():
     url_cip_file = "https://{0}/iplocation/cip.py".format(server_update)
     url_cip_version = "https://{0}/iplocation/cip.version".format(server_update)
     # 创建对象获取远端版本
-    result_request_cip = requests.get(url_cip_version)
-    result_update = str()
-    # 当状态码不为空时判断请求状态
-    if result_request_cip.status_code is not None:
-        if result_request_cip.status_code == 200:
-            result_remote = result_request_cip.text.rstrip()
-            result_need_update = "无需更新"
-            if result_remote > __version__:
-                result_need_update = "即将开始更新"
-                result_request_cip_new = requests.head(url_cip_file)
-                if result_request_cip_new.status_code == 200:
-                    urllib.request.urlretrieve(url_cip_file, __file__)
-                    result_update = "程序更新完毕!"
-                else:
-                    result_update = "请求远端cip文件出错, 响应码: {0}".format(result_request_cip_new.status_code)
+    result_request_cip_version = requests.get(url_cip_version)
+    # 当状态码存在且为200时:
+    if ((result_request_cip_version.status_code is not None) and (result_request_cip_version.status_code == 200)):
+        # 获取版本信息内容并去除末尾回车, 输出更新信息
+        result_remote = result_request_cip_version.text.rstrip()
+        update_info = "cip 更新 URL 为: {0}, 文件路径为: {1}, 当前版本为: {2}, cip 远端版本为: {3}, {4}".format(url_cip_file, __file__, __version__, result_remote)
+        print(update_info, end="")
+        if result_remote > __version__:
+            # 当远端版本高于当前版本时, 进行文件更新
+            result_request_cip_file = requests.head(url_cip_file)
+            if ((result_request_cip_file.status_code is not None) and (result_request_cip_file.status_code == 200)):
+                # 文件请求状态正常时, 输出更新开始状态状态, 并将文件远端文件内容写入当前文件中后关闭文件, 输出更新结束状态
+                print("文件状态正常, 开始更新...")
+                object_cip_file = open(file=__file__, encoding="utf-8", mode="w", errors="ignore")
+                object_cip_file.write(result_request_cip_file.text)
+                object_cip_file.flush()
+                object_cip_file.close()
+                print("更新完毕!")
+            elif (result_request_cip_file.status_code is not None):
+                print("请求远端cip文件出错! 未收到请求响应码")
             else:
-                pass
-            result_update = "cip 更新 URL 为: {0}, 文件路径为: {1}, 当前版本为: {2}, cip 远端版本为: {3}, {4}".format(url_cip_file, __file__, __version__, result_remote, result_need_update)
+                print("请求远端cip文件出错! 响应码: {0}".format(result_request_cip_file.status_code))
         else:
-            result_update = "获取远端版本出错, 状态码为: {0}".format(result_request_cip.status_code)
+            # 否则提示无需更新
+            print("无需更新")
+    elif (result_request_cip_version.status_code is None):
+        print("获取远端版本出错! 未收到请求响应码")
     else:
-        result_update = "请求出错, 未收到请求响应码"
-
-    return result_update
+        print("获取远端版本出错! 状态码为: {0}".format(result_request_cip_version.status_code))
 
 
 if __name__ == "__main__":
-    # 更新版本信息
-    # __version__ = check_update()
-
     # 创建 参数解析对象
     parser = argparse.ArgumentParser(
         prog="cip",
@@ -268,23 +278,24 @@ if __name__ == "__main__":
     # parser.add_argument("-h", "--help", help="显示该帮助文本后退出", dest="", action="store_true")
     parser.add_argument("-f", "--file", help="以文件作为输入, 并将结果追加至文件内", action="store_true")
     parser.add_argument("-u", "--update", help="更新cip", action="store_true")
-    parser.add_argument("-v", "--version", help="显示当前文件版本及更新 URL", action="version", version=__version__)
+    parser.add_argument("-v", "--version", help="显示当前文件版本及更新 URL")
     # 解析参数
-
 
     # sys.argv = ("1.1.1.1 www.baidu.com 1.11.1.2 x")
     # sys.argv = ("1.1.1.1 www.baidu.com 1.11.1.2 x -d 1.1.1.1 1.1.1.2 8.8.8.8 8.8.4.4")
     # sys.argv = ("-f 1.txt /Users/shengjyerao/Downloads/iptest.txt")
     # sys.argv = ("-f 1.txt /Users/shengjyerao/Downloads/iptest.txt -d 1.1.1.1 1.1.1.2 8.8.8.8 8.8.4.4")
-    sys.argv = (__file__ + " -u")
+    # sys.argv = (__file__ + " -v")
 
     if len(sys.argv) == 1:
         # 当传入参数长度为1, 即未指定任何参数时, 默认输出帮助
         parser.print_help()
     elif ("-u" or "--update") in sys.argv:
-        # 当参数中包含 -u 或者 --update的时候检查更新
-        result_chekc_update = check_update()
-        print(result_chekc_update)
+        # 当参数中包含 -u 或者 --update 的时候检查更新
+        check_update()
+    elif ("-v" or "--version") in sys.argv:
+        # 当参数中包含 -v 或者 --version 的时候检查更新
+        print(get_version())
     else:
         args = parser.parse_args()
 
