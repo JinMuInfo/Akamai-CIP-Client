@@ -278,7 +278,7 @@ if __name__ == "__main__":
     # parser.add_argument("-h", "--help", help="显示该帮助文本后退出", dest="", action="store_true")
     parser.add_argument("-f", "--file", help="以文件作为输入, 并将结果追加至文件内", action="store_true")
     parser.add_argument("-u", "--update", help="更新cip", action="store_true")
-    parser.add_argument("-v", "--version", help="显示当前文件版本及更新 URL")
+    parser.add_argument("-v", "--version", help="显示当前文件版本及更新 URL", action="sotre_true")
     # 解析参数
 
     # sys.argv = ("1.1.1.1 www.baidu.com 1.11.1.2 x")
