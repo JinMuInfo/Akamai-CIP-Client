@@ -1,8 +1,8 @@
 # Jinmu cip (Check IP)
 
-## 1. cip(Shell)
+## 1. cip (Shell)
 
-### 1.1 Unix(Linux, MacOS)
+### 1.1 Unix (Linux, MacOS)
 
 1. 放置在 __存在于系统环境变量的__ 的目录中, 例如:
     - /usr/local/bin/
@@ -20,13 +20,13 @@
 
 ## 2. cip.py (Python)
 
-### 2.1 Unix(Linux, MacOS)
+### 2.1 Unix (Linux, MacOS)
 
 1. 将 cip.py 文件放置在一个 __自己能找得到__ 的目录中;
-2. 安装 Python3(官网 <https://www.python.org>, 安装方法自行搜索);
-3. 安装前建议先为 Python PIP 配置 清华大学 镜像源;
+2. 安装 Python3.8+ (官网 <https://www.python.org>, 安装方法自行搜索);
+3. 为 Python PIP 配置 清华大学 镜像源;
     <https://mirrors.tuna.tsinghua.edu.cn/help/pypi/>
-4. 安装 Python requests, dnspython:
+4. 为 Python 安装第三方库 requests, dnspython:
 
     ``` zsh
     python3 -m pip install requests, dnspython
