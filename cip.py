@@ -2,24 +2,22 @@
 
 """
 cip(Check IP) 的 Python3 版本
-时间: 2021-05-13 23:13:54
-编辑: aojie654
 """
 
 
 import argparse
 import json
+import os
 import re
 import sys
-import os
 
 import dns.resolver
 import requests
 
 # cip 版本信息
 cip_info_version = {
-    "version": "0.0.9",
-    "timestamp": "2021-05-16 22:48:13",
+    "version": "0.1.0",
+    "timestamp": "2021-05-17 09:14:05",
     "author_name": "aojie654",
     "author_mail": "shengjie.ao@jinmuinfo.com"
 }
@@ -238,18 +236,22 @@ def check_update():
     if ((result_request_cip_version.status_code is not None) and (result_request_cip_version.status_code == 200)):
         # 获取版本信息内容并去除末尾回车, 输出更新信息
         result_remote = result_request_cip_version.text.rstrip()
-        update_info = "cip 更新 URL 为: {0}, 文件路径为: {1}, 当前版本为: {2}, cip 远端版本为: {3}, {4}".format(url_cip_file, __file__, __version__, result_remote)
-        print(update_info, end="")
+        update_info = "cip 更新 URL 为: {0}, 文件路径为: {1}, 当前版本为: {2}, cip 远端版本为: {3}, ".format(url_cip_file, __file__, __version__, result_remote)
+        print(update_info)
         if result_remote > __version__:
             # 当远端版本高于当前版本时, 进行文件更新
-            result_request_cip_file = requests.head(url_cip_file)
+            result_request_cip_file = requests.get(url_cip_file)
             if ((result_request_cip_file.status_code is not None) and (result_request_cip_file.status_code == 200)):
-                # 文件请求状态正常时, 输出更新开始状态状态, 并将文件远端文件内容写入当前文件中后关闭文件, 输出更新结束状态
-                print("文件状态正常, 开始更新...")
-                object_cip_file = open(file=__file__, encoding="utf-8", mode="w", errors="ignore")
+                # 文件请求状态正常时, 输出更新开始状态
+                print("请求远端cip文件正常, 开始更新...")
+                # 定义 cip文件 的路径
+                path_file_cip = __file__
+                # 将远程文件的内容写入 临时文件中
+                object_cip_file = open(file=path_file_cip, encoding="utf-8", mode="w", errors="ignore")
                 object_cip_file.write(result_request_cip_file.text)
                 object_cip_file.flush()
                 object_cip_file.close()
+                # 输出更新完成状态
                 print("更新完毕!")
             elif (result_request_cip_file.status_code is not None):
                 print("请求远端cip文件出错! 未收到请求响应码")
@@ -286,6 +288,7 @@ if __name__ == "__main__":
     # sys.argv = ("-f 1.txt /Users/shengjyerao/Downloads/iptest.txt")
     # sys.argv = ("-f 1.txt /Users/shengjyerao/Downloads/iptest.txt -d 1.1.1.1 1.1.1.2 8.8.8.8 8.8.4.4")
     # sys.argv = (__file__ + " -v")
+    # sys.argv = (__file__ + " -u")
 
     if len(sys.argv) == 1:
         # 当传入参数长度为1, 即未指定任何参数时, 默认输出帮助
@@ -314,3 +317,4 @@ if __name__ == "__main__":
         else:
             # 存在 -f 时, 将 文件列表 作为输入调用 cip_file
             cip_file(file_list_tmp=args.input)
+    print("{0} cip 运行结束 {0}".format("=" * 10))
