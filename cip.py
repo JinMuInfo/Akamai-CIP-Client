@@ -6,7 +6,6 @@ cip(Check IP) 的 Python3 版本
 
 
 import argparse
-import json
 import os
 import re
 import sys
@@ -15,13 +14,34 @@ import dns.resolver
 import requests
 
 # cip 版本信息
-cip_info_version = {
-    "version": "0.1.0",
-    "timestamp": "2021-05-17 09:14:05",
-    "author_name": "aojie654",
-    "author_mail": "shengjie.ao@jinmuinfo.com"
-}
-__version__ = cip_info_version["version"]
+__version__ = "0.1.1"
+cip_info_version = """
+版本: {0}
+时间: 2021-05-18 11:13:05"
+编辑: aojie654"
+邮箱: shengjie.ao@jinmuinfo.com
+""".format(__version__)
+
+# 版本日志
+log_version = """
+v 0.1.1:
+简介:
+- 无
+功能更新:
+- 增加了更新日志
+- 为版本更新时的输出增加换行, 并输出更新日志
+- 更新了版本信息显示方式
+- 更新了版本号 ╮(￣▽￣)╭
+
+v 0.1.0:
+简介:
+- cip Python 版的第一个版本
+功能更新:
+- 支持多 IP/域名/文件 输入
+- 支持 非本地DNS
+- 增加了较为友好的帮助功能
+- 增加了较为便捷的更新功能
+"""
 
 # 定义cip服务器信息, DNS
 server_cip = "cip.jinmu.info"
@@ -217,7 +237,7 @@ def get_version():
     获取当前版本
     """
 
-    result_version = json.dumps(cip_info_version, indent=4, ensure_ascii=False)
+    result_version = cip_info_version
 
     return result_version
 
@@ -227,7 +247,7 @@ def check_update():
     检查脚本更新
     """
     # 初始化 cip更新服务器 及 url
-    server_update = "dd.jinmu.info"
+    server_update = "dls.jinmu.info"
     url_cip_file = "https://{0}/iplocation/cip.py".format(server_update)
     url_cip_version = "https://{0}/iplocation/cip.version".format(server_update)
     # 创建对象获取远端版本
@@ -236,7 +256,7 @@ def check_update():
     if ((result_request_cip_version.status_code is not None) and (result_request_cip_version.status_code == 200)):
         # 获取版本信息内容并去除末尾回车, 输出更新信息
         result_remote = result_request_cip_version.text.rstrip()
-        update_info = "cip 更新 URL 为: {0}, 文件路径为: {1}, 当前版本为: {2}, cip 远端版本为: {3}, ".format(url_cip_file, __file__, __version__, result_remote)
+        update_info = "cip 更新 URL 为: {0}\n文件路径为: {1}\n当前版本为: {2}\ncip 远端版本为: {3}, ".format(url_cip_file, __file__, __version__, result_remote)
         print(update_info)
         if result_remote > __version__:
             # 当远端版本高于当前版本时, 进行文件更新
@@ -251,22 +271,36 @@ def check_update():
                 object_cip_file.write(result_request_cip_file.text)
                 object_cip_file.flush()
                 object_cip_file.close()
+                # 输出更新日志
+                log_version = get_log_version()
+                print(log_version)
                 # 输出更新完成状态
-                print("更新完毕!")
+                print("更新完成啦, 看看写代码的这次又新增了多少个bug *~(￣▽￣)~*")
             elif (result_request_cip_file.status_code is not None):
                 print("请求远端cip文件出错! 未收到请求响应码")
             else:
                 print("请求远端cip文件出错! 响应码: {0}".format(result_request_cip_file.status_code))
+        elif result_remote == __version__:
+            # 版本一致时提示无需更新
+            print("和远端版本一样咯, 没必要更新啦 *~(￣▽￣)~*")
         else:
-            # 否则提示无需更新
-            print("无需更新")
+            # 远端版本低于当前版本时
+            print("怕不是写代码的又偷懒了, 请喊他更新远端版本 *~(￣▽￣)~*")
     elif (result_request_cip_version.status_code is None):
-        print("获取远端版本出错! 未收到请求响应码")
+        print("获取远端版本出错! 未收到请求响应码!")
     else:
         print("获取远端版本出错! 状态码为: {0}".format(result_request_cip_version.status_code))
 
+def get_log_version():
+    """
+    返回 版本日志
+    """
+
+    return log_version
 
 if __name__ == "__main__":
+    # 显示运行提示
+    print("{0} cip 运行开始 {0}".format("=" * 20))
     # 创建 参数解析对象
     parser = argparse.ArgumentParser(
         prog="cip",
@@ -279,8 +313,9 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--dns", nargs="+", help="在输入域名时指定 DNS服务器, 未指定时默认使用 Local DNS")
     # parser.add_argument("-h", "--help", help="显示该帮助文本后退出", dest="", action="store_true")
     parser.add_argument("-f", "--file", help="以文件作为输入, 并将结果追加至文件内", action="store_true")
+    parser.add_argument("-l", "--log", help="查看更新日志", action="store_true")
     parser.add_argument("-u", "--update", help="更新cip", action="store_true")
-    parser.add_argument("-v", "--version", help="显示当前文件版本及更新 URL", action="store_true")
+    parser.add_argument("-v", "--version", help="查看当前文件版本及更新 URL", action="store_true")
     # 解析参数
 
     # sys.argv = ("1.1.1.1 www.baidu.com 1.11.1.2 x")
@@ -293,6 +328,9 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         # 当传入参数长度为1, 即未指定任何参数时, 默认输出帮助
         parser.print_help()
+    elif ("-l" or "--log") in sys.argv:
+        # 当参数中包含 -u 或者 --update 的时候检查更新
+        print(get_log_version())
     elif ("-u" or "--update") in sys.argv:
         # 当参数中包含 -u 或者 --update 的时候检查更新
         check_update()
@@ -317,4 +355,4 @@ if __name__ == "__main__":
         else:
             # 存在 -f 时, 将 文件列表 作为输入调用 cip_file
             cip_file(file_list_tmp=args.input)
-    print("{0} cip 运行结束 {0}".format("=" * 10))
+    print("{0} cip 运行结束 {0}".format("=" * 20))

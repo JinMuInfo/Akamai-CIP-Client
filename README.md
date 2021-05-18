@@ -2,6 +2,13 @@
 
 ## 1. cip (Shell)
 
+### 1.0 依赖第三方命令
+
+cip 中使用了以下第三方命令:
+
+- dig
+- curl
+
 ### 1.1 Unix (Linux, MacOS)
 
 1. 放置在 __存在于系统环境变量的__ 的目录中, 例如:
@@ -15,10 +22,15 @@
     ```
 
 3. cip用法如下:
-    1. cip IP
-    2. cip -f 包含ip列表的源文件 结果输出文件
+    - cip IP
+    - cip -f 包含ip列表的源文件 结果输出文件
 
 ## 2. cip.py (Python)
+
+### 2.0 依赖第三方库
+
+- requests
+- dnspython
 
 ### 2.1 Unix (Linux, MacOS)
 
