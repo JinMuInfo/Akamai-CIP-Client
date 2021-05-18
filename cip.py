@@ -14,20 +14,16 @@ import dns.resolver
 import requests
 
 # cip 版本信息
-__version__ = "0.1.2"
+__version__ = "0.1.1"
 cip_info_version = """
 版本: {0}
-时间: 2021-05-18 12:05:42"
+时间: 2021-05-18 13:17:58"
 编辑: aojie654"
 邮箱: shengjie.ao@jinmuinfo.com
 """.format(__version__)
 
 # 版本日志
 log_version = """
-v0.1.2:
-简介:
-- 这个版本没有更新新功能, 只是为了配合远端自动更新刷了个版本号~
-
 v0.1.1:
 简介:
 - 无
