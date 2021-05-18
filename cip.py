@@ -14,7 +14,7 @@ import dns.resolver
 import requests
 
 # cip 版本信息
-__version__ = "0.1.2"
+__version__ = "0.1.1"
 cip_info_version = """
 版本: {0}
 时间: 2021-05-18 11:13:05"
@@ -248,8 +248,8 @@ def check_update():
     """
     # 初始化 cip更新服务器 及 url
     server_update = "dls.jinmu.info"
-    url_cip_file = "https://{0}/iplocation/cip.py".format(server_update)
-    url_cip_version = "https://{0}/iplocation/cip.version".format(server_update)
+    url_cip_file = "https://{0}/iplocation/jm_akamai_cip/cip.py".format(server_update)
+    url_cip_version = "https://{0}/iplocation/jm_akamai_cip/cip.version".format(server_update)
     # 创建对象获取远端版本
     result_request_cip_version = requests.get(url_cip_version)
     # 当状态码存在且为200时:
