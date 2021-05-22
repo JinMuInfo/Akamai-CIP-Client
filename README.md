@@ -9,7 +9,7 @@
 # 不过 # 开头的都是注释, 可以不用复制, 复制了也没用
 ```
 
-## 1. cip (Shell)
+## 1. cip (zsh)
 
 ### 1.0 依赖第三方命令
 
@@ -18,13 +18,13 @@ cip 中使用了以下第三方命令:
 - dig
 - curl
 
-### 1.1 Unix (Linux, MacOS)
+### 1.1 Unix (Linux, macOS)
 
 1. 放置在 __存在于系统环境变量的__ 的目录中, 例如:
     - /usr/local/bin/
     - /usr/bin/
     - ~/.bin/ (推荐, 建议创建该目录后将其添加至 环境变量:PATH 中, 并将后续个人安装的其他命令行工具和自定义命令都放置于该文件夹中)
-2. 给 cip 文件通过 chmod 命令添加执行权限:
+2. 通过以下命令给 cip 文件通过 chmod 命令添加执行权限:
 
     ``` zsh
     chmod +x cip
@@ -47,7 +47,7 @@ cip 中使用了以下第三方命令:
     1. 通过 Jinmu GitLab:
        1. 既然已经能看到这个 README 了, 那肯定是已经知道 git 怎么用了, git clone一下到本地吧
     2. 通过 dls.jinmu.info 下载:
-       2. 下载链接: <https://dls.jinmu.info/iplocation/jm_akamai_cip/cip.py>
+       1. 下载链接: <https://dls.jinmu.info/iplocation/jm_akamai_cip/cip.py>
 2. 安装 Python3.8+ (官网 <https://www.python.org>, 安装方法自行搜索);
 3. pypi官方源速度慢的令人发指, 所以需要一个访问速度快的国内镜像源(可以理解成CDN).
     通过以下命令, 为 Python PIP 配置 清华大学 镜像源:
@@ -64,8 +64,8 @@ cip 中使用了以下第三方命令:
     python3 -m pip install requests dnspython
     ```
 
-5. 在环境变量中添加如下行, 为 cip配置别名.
-   以我的环境为例, 使用了zsh, 环境变量在 ~/.zprofile中, cip文件的路径是 /Users/shengjyerao/git/jm_akamai_cip/cip.py:
+5. 为 cip 配置别名.
+   以我的环境为例, 使用了zsh, 环境变量在 ~/.zshrc 中, cip文件的路径是 /Users/shengjyerao/git/jm_akamai_cip/cip.py，在 ~/.zshrc 中添加如下行
 
     ``` zsh
     alias cip="python3 /Users/shengjyerao/git/jm_akamai_cip/cip.py"
@@ -77,7 +77,7 @@ cip 中使用了以下第三方命令:
     cip -v
     ```
 
-7. cip Python版本用法: cip (-h, 可不输入, 缺省参数时默认输出帮助) 查看帮助
+7. cip Python版本用法: cip (-h, --help 可不输入, 缺省参数时默认输出帮助) 查看帮助
 
 ### 2.2 Windows
 
